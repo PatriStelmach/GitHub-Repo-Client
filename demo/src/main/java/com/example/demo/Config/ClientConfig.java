@@ -1,6 +1,8 @@
 package com.example.demo.Config;
 
+import com.example.demo.Clients.ClientErrorDecoder;
 import feign.RequestInterceptor;
+import feign.codec.ErrorDecoder;
 import org.springframework.context.annotation.Bean;
 
 public class ClientConfig
@@ -17,9 +19,13 @@ public class ClientConfig
             }
             catch (Exception e)
             {
-                throw new RuntimeException("Nie można uzyskać tokena dostępu", e);
+                throw new RuntimeException("Unable to obtain access token", e);
             }
         };
     }
 
+    @Bean
+    public ErrorDecoder errorDecoder() {
+        return new ClientErrorDecoder();
+    }
 }

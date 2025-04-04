@@ -10,7 +10,6 @@ import java.util.List;
 @Data
 public class GitRepo
 {
-
     private final String name;
 
     private final Owner owner;

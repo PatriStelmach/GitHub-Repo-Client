@@ -21,6 +21,8 @@ public class GitController
     private final GitClient gitClient;
     private final GitService gitService;
 
+
+
     @GetMapping("/fromClient/{username}")
     public ResponseEntity <List<GitRepo>> fromClient(@PathVariable("username") String username)
     {
@@ -32,6 +34,12 @@ public class GitController
     public ResponseEntity <List<Branch>> branch(@PathVariable("username") String username, @PathVariable("repo") String repo)
     {
         return ResponseEntity.ok().body(gitClient.getBranches(username, repo));
+    }
+
+    @GetMapping("/user/{username}")
+    public ResponseEntity<String> getUser(@PathVariable("username") String username)
+    {
+        return ResponseEntity.ok().body(gitClient.getUser(username));
     }
 
 
