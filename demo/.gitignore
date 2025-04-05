@@ -4,7 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-/src/main/resources/git_pkcs8.pem
+src/main/resources/github-key.pem
 
 ### STS ###
 .apt_generated

@@ -6,4 +6,4 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
-/resources/git_pkcs8.pem
+/src/main/resources/git_pkcs8.pem

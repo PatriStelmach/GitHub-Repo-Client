@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-@FeignClient(name = "My-Git-Client", url = "https://api.github.com", configuration = ClientConfig.class)
+@FeignClient(name = "GitHub-Client", url = "https://api.github.com", configuration = ClientConfig.class)
 public interface GitClient
 {
 
