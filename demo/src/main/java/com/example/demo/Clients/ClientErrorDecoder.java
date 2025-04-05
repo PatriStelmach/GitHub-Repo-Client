@@ -26,7 +26,7 @@ public class ClientErrorDecoder implements ErrorDecoder
         }
         if (response.status() == 404)
         {
-        throw new UserNotFoundException(message.getMessage());
+            throw new UserNotFoundException(message.getMessage());
         }
         else
         {

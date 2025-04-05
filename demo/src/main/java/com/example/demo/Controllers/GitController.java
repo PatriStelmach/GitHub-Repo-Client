@@ -39,6 +39,8 @@ public class GitController
     @GetMapping("/user/{username}")
     public ResponseEntity<String> getUser(@PathVariable("username") String username)
     {
+        for(int i = 0; i < 60; i++)
+            gitClient.getUser(username);
         return ResponseEntity.ok().body(gitClient.getUser(username));
     }
 
