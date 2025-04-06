@@ -1,7 +1,6 @@
-package com.example.demo.Controllers;
+package com.example.demo.Errors;
 
 import com.example.demo.Models.CustomException;
-import com.example.demo.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,5 +21,24 @@ public class GitControllerAdvice extends ResponseEntityExceptionHandler
         return new ResponseEntity<CustomException>(error, HttpStatus.NOT_FOUND);
     }
 
-//
+    @ExceptionHandler(PKCS1KeyException.class)
+    public ResponseEntity<CustomException> handleKeyException()
+    {
+        CustomException error = new CustomException();
+        error.setCode(404);
+        error.setMessage("The PKC1 key file does not exist or has a wrong name. Please check your 'resources' folder.");
+
+        return new ResponseEntity<CustomException>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(WrongAppIdException.class)
+    public ResponseEntity<CustomException> handleWrongAppIdException()
+    {
+        CustomException error = new CustomException();
+        error.setCode(401);
+        error.setMessage("Wrong GitHub application ID");
+
+        return new ResponseEntity<CustomException>(error, HttpStatus.UNAUTHORIZED);
+    }
+
 }

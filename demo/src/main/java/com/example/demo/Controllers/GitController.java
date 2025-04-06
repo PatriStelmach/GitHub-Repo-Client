@@ -19,12 +19,9 @@ import java.util.List;
 @RequestMapping("/github")
 public class GitController
 {
-
-    private final GitClient gitClient;
     private final GitService gitService;
     private final ClientConfig clientConfig;
     private final AppId appId;
-
 
 
     @GetMapping("/fromClient/{username}/{app_id}")
@@ -34,20 +31,6 @@ public class GitController
         clientConfig.requestInterceptor(appId);
         return ResponseEntity.ok().body(gitService.getAllRepos(username));
     }
-
-
-    @GetMapping("/branch/{username}/{repo}")
-    public ResponseEntity <List<Branch>> branch(@PathVariable("username") String username, @PathVariable("repo") String repo)
-    {
-        return ResponseEntity.ok().body(gitClient.getBranches(username, repo));
-    }
-
-//        @GetMapping("/user/{username}")
-//        public ResponseEntity<String> getUser(@PathVariable("username") String username)
-//        {
-//            clientConfig.requestInterceptor();
-//            return ResponseEntity.ok().body(gitClient.getUser(username));
-//        }
 
 
 }
