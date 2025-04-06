@@ -20,7 +20,6 @@ public class CreateJWT
 
         String privateKeyContent = PKC1Decode.decode();
 
-
         privateKeyContent = privateKeyContent
                 .replaceAll("-----BEGIN PRIVATE KEY-----", "")
                 .replaceAll("-----END PRIVATE KEY-----", "")
