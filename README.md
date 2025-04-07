@@ -74,9 +74,7 @@ You can run the application in two ways:
 
 When application is running
 ---------------------------
-You can use it in two ways:
 
-1. With Environment Variables
 
 Set the following environment variables before running the application:
 
@@ -87,9 +85,6 @@ Then run:
 
     mvn spring-boot:run
 
-2. Interactive Mode
-
-You can enter your own path to private key and client APP ID, the application will prompt you via CLI to enter the key path and App ID manually.
 
 Running Tests
 -------------
