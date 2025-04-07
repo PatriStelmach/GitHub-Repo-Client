@@ -2,14 +2,10 @@ package com.example.demo.Config;
 
 import java.io.FileReader;
 import java.nio.file.Paths;
-import java.security.KeyException;
 import java.security.Security;
 import java.util.Base64;
 
-import com.example.demo.Errors.ClientErrorDecoder;
-import com.example.demo.Errors.PKCS1KeyException;
-import com.example.demo.Errors.UserNotFoundException;
-import feign.codec.ErrorDecoder;
+import com.example.demo.Services.GitService;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Encoding;
 import org.bouncycastle.asn1.ASN1Primitive;
@@ -18,30 +14,37 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
-import org.springframework.context.annotation.Bean;
 
 import java.security.PrivateKey;
+import java.util.Scanner;
 
 public class PKC1Decode
 {
 
     public static String decode() throws Exception
     {
-        String address = "demo/src/main/resources/github-key.pem";
+        Scanner scanner = new Scanner(System.in);
         Security.addProvider(new BouncyCastleProvider());
 
-        if(!Paths.get(address).toFile().exists())
+        if(!Paths.get(GitService.getPath()).toFile().exists())
         {
-            throw new PKCS1KeyException("");
+            System.out.println("\nThe path is incorrect." +
+                    "\nCheck your private key name and directory and try again.\n" );
+
+            return(GitService.definePath(scanner.nextLine()));
         }
 
-        PEMParser pemParser = new PEMParser(new FileReader(address));
+
+        PEMParser pemParser = new PEMParser(new FileReader(GitService.getPath()));
         Object object = pemParser.readObject();
 
-        JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
-        PrivateKey privateKey;
+        //checking and decoding if given file is a PKCS#1 key
+        if (object instanceof PEMKeyPair)
+        {
 
-        privateKey = converter.getKeyPair((PEMKeyPair) object).getPrivate();
+            JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
+            PrivateKey privateKey = converter.getKeyPair((PEMKeyPair) object).getPrivate();
+
 
             final byte[] encoded = privateKey.getEncoded();
             final PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(encoded);
@@ -49,6 +52,14 @@ public class PKC1Decode
             final ASN1Primitive primitive = encodable.toASN1Primitive();
             byte[] toPKCS8 = primitive.getEncoded(ASN1Encoding.DER);
             return Base64.getEncoder().encodeToString(toPKCS8);
+        }
 
+        else
+        {
+            System.out.println("\nGiven file is not a PKCS#1 file." +
+                    "\nCheck your PKCS#1 file and try again.\n"  );
+            return(GitService.definePath(scanner.nextLine()));
+
+        }
     }
 }

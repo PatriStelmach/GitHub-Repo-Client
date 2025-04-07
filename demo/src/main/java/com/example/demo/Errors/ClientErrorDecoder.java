@@ -11,6 +11,8 @@ import java.io.InputStream;
 public class ClientErrorDecoder implements ErrorDecoder
 {
     private final ErrorDecoder errorDecoder = new Default();
+
+    //custom error when retrieving 404 user not found from GitHub API
     @Override
     public Exception decode(String methodKey, Response response)
     {

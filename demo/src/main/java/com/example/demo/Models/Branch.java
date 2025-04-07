@@ -11,10 +11,10 @@ import lombok.Data;
 public class Branch
 {
 
-        private final String name;
+        private  String name;
 
         @JsonProperty("commit")
-        private final Commit lastCommitSha;
+        private  Commit lastCommitSha;
 
 
 }
