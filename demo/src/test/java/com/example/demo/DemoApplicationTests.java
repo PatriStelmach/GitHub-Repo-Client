@@ -24,26 +24,4 @@ class DemoApplicationTests {
 	void contextLoads() {
 	}
 
-	public static MockWebServer mockWebServer;
-
-	@BeforeEach
-	void setUp() throws IOException {
-		mockWebServer = new MockWebServer();
-		mockWebServer.start();
-	}
-
-	@AfterEach
-	void tearDown() throws IOException {
-		mockWebServer.shutdown();
-	}
-
-	@Test
-	void getUser() throws UserNotFoundException
-	{
-		MockWebServer mockWebServer = new MockWebServer();
-		MockResponse mockResponse = new MockResponse()
-				.addHeader("CONTENT_TYPE", "application/json; charset=utf-8" )
-				.setBody("{ \"name\": \"John\" }");
-	}
-
 }
