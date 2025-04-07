@@ -12,9 +12,6 @@ import java.util.List;
 public interface GitClient
 {
 
-    @GetMapping("/users/{username}")
-    String getUser(@PathVariable("username") String username);
-
     @GetMapping("/users/{username}/repos")
     List<GitRepo> getRepos(@PathVariable("username") String username);
 

@@ -4,7 +4,8 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-src/main/resources/github-key.pem
+demo/github-key.pem
+demo/.env
 
 ### STS ###
 .apt_generated

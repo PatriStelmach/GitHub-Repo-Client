@@ -9,5 +9,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class Commit
 {
-    private final String sha;
+    private  String sha;
 }

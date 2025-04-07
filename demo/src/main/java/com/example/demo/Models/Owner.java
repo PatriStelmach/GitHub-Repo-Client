@@ -7,5 +7,5 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Owner
 {
-    private final String login;
+    private  String login;
 }

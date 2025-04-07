@@ -1,7 +1,6 @@
 package com.example.demo.Config;
 
-import com.example.demo.Clients.ClientErrorDecoder;
-import com.example.demo.Models.AppId;
+import com.example.demo.Errors.ClientErrorDecoder;
 import feign.RequestInterceptor;
 import feign.codec.ErrorDecoder;
 import org.springframework.context.annotation.Bean;
@@ -11,22 +10,26 @@ import org.springframework.context.annotation.Configuration;
 public class ClientConfig
 {
 
-    //AppId object since RequestInterceptor only accepts objects as parameters
     @Bean
-    public RequestInterceptor requestInterceptor(AppId appId)
+    public RequestInterceptor requestInterceptor()
     {
-        return requestTemplate ->
-        {
-            try
+
+            return requestTemplate ->
             {
-                String token = GitAuth.getInstallToken(CreateJWT.generateJWTFromPKCS1File(appId.getId()));
-                requestTemplate.header("Authorization", "token " + token);
-            }
-            catch (Exception e)
-            {
-                throw new RuntimeException("Unable to obtain access token", e);
-            }
-        };
+
+                try
+                {
+                    String token = GitAuth.getInstallToken(CreateJWT.generateJWTFromPKCS1File());
+                    requestTemplate.header("Authorization", "token " + token);
+                }
+
+                catch (Exception e)
+                {
+                    throw new RuntimeException("");
+                }
+            };
+
+
     }
 
     @Bean

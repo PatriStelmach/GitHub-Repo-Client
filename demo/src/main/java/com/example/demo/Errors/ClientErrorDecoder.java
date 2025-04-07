@@ -1,7 +1,6 @@
-package com.example.demo.Clients;
+package com.example.demo.Errors;
 
 import com.example.demo.Models.ExceptionMessage;
-import com.example.demo.UserNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
 import feign.codec.ErrorDecoder;
@@ -12,6 +11,8 @@ import java.io.InputStream;
 public class ClientErrorDecoder implements ErrorDecoder
 {
     private final ErrorDecoder errorDecoder = new Default();
+
+    //custom error when retrieving 404 user not found from GitHub API
     @Override
     public Exception decode(String methodKey, Response response)
     {
@@ -20,20 +21,20 @@ public class ClientErrorDecoder implements ErrorDecoder
         {
             ObjectMapper mapper = new ObjectMapper();
             message = mapper.readValue(bodyIs, ExceptionMessage.class);
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             return new Exception(e.getMessage());
         }
-        if (response.status() == 404)
+        if(response.status() == 404)
         {
             throw new UserNotFoundException(message.getMessage());
         }
-        else
-        {
-           return errorDecoder.decode(methodKey, response);
+            else
+            {
+                return errorDecoder.decode(methodKey, response);
+            }
         }
 
     }
 
-
-}
