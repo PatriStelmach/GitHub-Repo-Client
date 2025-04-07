@@ -10,10 +10,8 @@ import java.util.List;
 @Data
 public class GitRepo
 {
-    private  String name;
-
-    private  Owner owner;
-
+    private String name;
+    private Owner owner;
     private List<Branch> branches;
-    private  boolean fork;
+    private boolean fork;
 }

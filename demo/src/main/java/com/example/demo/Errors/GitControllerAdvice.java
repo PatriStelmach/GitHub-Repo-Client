@@ -15,9 +15,9 @@ public class GitControllerAdvice extends ResponseEntityExceptionHandler
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<CustomException> handleNotFoundException()
     {
-        CustomException error = new CustomException();
-        error.setStatus(404);
-        error.setMessage("User with given username does not exist");
+        String message = "User with given username does not exist";
+        int status = HttpStatus.NOT_FOUND.value();
+        CustomException error = new CustomException(status, message);
 
 
         return new ResponseEntity<CustomException>(error, HttpStatus.NOT_FOUND);

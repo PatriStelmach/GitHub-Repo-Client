@@ -28,13 +28,15 @@ public class ClientErrorDecoder implements ErrorDecoder
         }
         if(response.status() == 404)
         {
-            throw new UserNotFoundException(message.getMessage());
+            throw new UserNotFoundException(message.message());
         }
             else
             {
                 return errorDecoder.decode(methodKey, response);
             }
         }
+
+
 
     }
 

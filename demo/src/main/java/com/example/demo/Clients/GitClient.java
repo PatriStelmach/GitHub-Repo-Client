@@ -1,5 +1,6 @@
 package com.example.demo.Clients;
-import com.example.demo.Config.ClientConfig;
+import com.example.demo.Errors.ClientErrorDecoder;
+import com.example.demo.Errors.Decoder;
 import com.example.demo.Models.Branch;
 import com.example.demo.Models.GitRepo;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -8,10 +9,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-@FeignClient(name = "GitHub-Client", url = "https://api.github.com", configuration = ClientConfig.class)
+@FeignClient(name = "GitHubClient", url = "${github.api.url}", configuration = Decoder.class)
 public interface GitClient
 {
-
     @GetMapping("/users/{username}/repos")
     List<GitRepo> getRepos(@PathVariable("username") String username);
 
