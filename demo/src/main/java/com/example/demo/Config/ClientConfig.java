@@ -14,20 +14,20 @@ public class ClientConfig
     public RequestInterceptor requestInterceptor()
     {
 
-            return requestTemplate ->
+        return requestTemplate ->
+        {
+
+            try
             {
+                String token = GitAuth.getInstallToken(CreateJWT.generateJWTFromPKCS1File());
+                requestTemplate.header("Authorization", "token " + token);
+            }
 
-                try
-                {
-                    String token = GitAuth.getInstallToken(CreateJWT.generateJWTFromPKCS1File());
-                    requestTemplate.header("Authorization", "token " + token);
-                }
-
-                catch (Exception e)
-                {
-                    throw new RuntimeException("");
-                }
-            };
+            catch (Exception e)
+            {
+                throw new RuntimeException("");
+            }
+        };
 
 
     }

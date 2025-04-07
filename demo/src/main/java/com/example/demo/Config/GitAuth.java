@@ -31,25 +31,10 @@ public class GitAuth
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         //checking if app id is correct by getting status from the GitHub API
-        while (response.statusCode() != 200)
+        if (response.statusCode() != 200)
         {
-            Scanner scanner = new Scanner(System.in);
             System.out.println("Wrong GitHub application ID.\n" +
                     "Check your application ID and try again.");
-            {
-                if(!scanner.hasNextLong())
-                {
-                    System.out.println("App ID must be a number.\n" +
-                            "Try again.");
-                    scanner.nextLine();
-                }
-                else
-                {
-                    return GitService.estAppId(Long.parseLong(scanner.nextLine()));
-                }
-            }
-
-
         }
         ObjectMapper mapper = new ObjectMapper();
         List<Installation> installations=  mapper.readValue(response.body(), mapper.getTypeFactory().constructCollectionType(List.class, Installation.class));

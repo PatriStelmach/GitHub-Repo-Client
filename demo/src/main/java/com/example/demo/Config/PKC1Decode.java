@@ -16,14 +16,12 @@ import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 
 import java.security.PrivateKey;
-import java.util.Scanner;
 
 public class PKC1Decode
 {
 
     public static String decode() throws Exception
     {
-        Scanner scanner = new Scanner(System.in);
         Security.addProvider(new BouncyCastleProvider());
 
         if(!Paths.get(GitService.getPath()).toFile().exists())
@@ -31,7 +29,6 @@ public class PKC1Decode
             System.out.println("\nThe path is incorrect." +
                     "\nCheck your private key name and directory and try again.\n" );
 
-            return(GitService.definePath(scanner.nextLine()));
         }
 
 
@@ -39,8 +36,12 @@ public class PKC1Decode
         Object object = pemParser.readObject();
 
         //checking and decoding if given file is a PKCS#1 key
-        if (object instanceof PEMKeyPair)
+        if (!(object instanceof PEMKeyPair))
         {
+            System.out.println("\nGiven file is not a PKCS#1 file." +
+                    "\nCheck your PKCS#1 file and try again.\n"  );
+        }
+
 
             JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
             PrivateKey privateKey = converter.getKeyPair((PEMKeyPair) object).getPrivate();
@@ -52,14 +53,8 @@ public class PKC1Decode
             final ASN1Primitive primitive = encodable.toASN1Primitive();
             byte[] toPKCS8 = primitive.getEncoded(ASN1Encoding.DER);
             return Base64.getEncoder().encodeToString(toPKCS8);
-        }
 
-        else
-        {
-            System.out.println("\nGiven file is not a PKCS#1 file." +
-                    "\nCheck your PKCS#1 file and try again.\n"  );
-            return(GitService.definePath(scanner.nextLine()));
 
-        }
+
     }
 }

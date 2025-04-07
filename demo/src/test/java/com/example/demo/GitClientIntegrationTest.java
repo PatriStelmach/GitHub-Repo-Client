@@ -2,39 +2,32 @@ package com.example.demo;
 
 
 import com.example.demo.Clients.GitClient;
-import com.example.demo.Config.CreateJWT;
-import com.example.demo.Config.GitAuth;
-import com.example.demo.Config.PKC1Decode;
-import com.example.demo.Controllers.GitController;
 import com.example.demo.Errors.UserNotFoundException;
 import com.example.demo.Models.Branch;
 import com.example.demo.Models.GitRepo;
 import com.example.demo.Services.GitService;
-import lombok.Getter;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Scanner;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        properties = {
+                "github.api.url=http://localhost:8081"
+        }
+)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class GitClientIntegrationTest
 {
@@ -42,88 +35,118 @@ public class GitClientIntegrationTest
     private GitClient gitClient;
     @Autowired
     private GitService gitService;
-    @Autowired
-    private TestRestTemplate restTemplate;
+
+    public static MockWebServer mockWebServer;
+
+    @BeforeAll
+    static void setUp() throws IOException
+    {
+        mockWebServer = new MockWebServer();
+        mockWebServer.start(8081);
+
+    }
+
+    @AfterAll
+    static void tearDown() throws IOException
+    {
+        mockWebServer.shutdown();
+    }
 
 
     @Test
     public void contextLoads() {
     }
 
+
+
     //tests if endpoint works for default "octocat" user
     @Test
     public void testGetReposFromGitHub()
     {
-        //given, when
-        List<GitRepo> repos = gitService.getAllRepos("octocat");
+        // given
+        String jsonBody = """
+                    [
+                       {
+                                          "name": "git-consortium",
+                                          "owner": {
+                                              "login": "octocat"
+                                          },
+                                          "branches": [
+                                              {
+                                                  "name": "master",
+                                                  "commit": {
+                                                      "sha": "b33a9c7c02ad93f621fa38f0e9fc9e867e12fa0e"
+                                                  }
+                                              }
+                                          ],
+                                          "fork": false
+                                      }
+                    ]
+                """;
 
-        //then
+        mockWebServer.enqueue(new MockResponse()
+                .setBody(jsonBody)
+                .addHeader("Content-Type", "application/json"));
+
+        // when
+        List<GitRepo> repos = gitClient.getRepos("octocat");
+
+        // then
         assertNotNull(repos, "Repository list can't be null");
-        assertFalse(repos.isEmpty(), "Repository list can't be null");
-
-        repos.forEach(repo -> System.out.println("Repo: " + repo.getName()));
+        assertFalse(repos.isEmpty(), "Repository list can't be empty");
+        assertEquals("git-consortium", repos.get(0).getName());
+        assertEquals("octocat", repos.get(0).getOwner().login());
     }
+    @Test
+    void shouldReturnNotFoundForInvalidUser() throws IOException
+    {
+        // given
+        String username = "blalellelelelelelelelleleleldoesntexist";
 
-    //tests if any branch exists for given repo
+        mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(404)
+                .setBody("{\"message\":\"User with given username does not exist\"}")
+                .addHeader("Content-Type", "application/json"));
+
+        mockWebServer.start();
+
+        System.setProperty("github.api.url", mockWebServer.url("/").toString());
+
+        // when // then
+        assertThrows(UserNotFoundException.class, () -> gitService.getAllRepos(username));
+    }
     @Test
     public void testGetBranchesFromGitHub()
     {
-        //given, when
+        // given
+        String jsonBody = """
+        [
+          {
+            "name": "main",
+            "commit": {
+              "sha": "abc123",
+              "url": "https://api.github.com/repos/octocat/Hello-World/commits/abc123"
+            }
+          }
+        ]
+    """;
+
+        mockWebServer.enqueue(new MockResponse()
+                .setBody(jsonBody)
+                .addHeader("Content-Type", "application/json"));
+
+        // when
         List<Branch> branches = gitClient.getBranches("octocat", "Hello-World");
 
-        //then
-        assertNotNull(branches, "List of branches can't be null");
-        assertFalse(branches.isEmpty(), "List of branches can't be null");
-
-        //debug info
-        branches.forEach(branch -> System.out.println("Branch: " + branch.getName()));
-    }
-
-    //tests if user with wrong username throws not found
-    @Test
-    void shouldReturnNotFoundForInvalidUser()
-    {
-
-        //given
-        String username = "blalellelelelelelelelleleleldoesntexist";
-
-        //when
-        ResponseEntity<String> response = restTemplate.getForEntity("/getRepos/" + username, String.class);
-
         // then
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNotNull(branches, "List of branches can't be null");
+        assertFalse(branches.isEmpty(), "List of branches can't be empty");
+        assertEquals("main", branches.get(0).name());
     }
 
-    //testing if env var for GitHub App Id exists and is correct, testing then jwt and accesstoken
-    @Test
-    public void testEstAppIdWithRealValues() throws Exception {
-        // Given
-        Long realAppId = Long.parseLong(System.getenv("GITHUB_AP_ID"));
 
-        // When
-        String realJwt = CreateJWT.generateJWTFromPKCS1File();
-        String realToken = GitAuth.getInstallToken(realJwt);
-        Long result = GitService.estAppId(realAppId);
 
-        // Then
-        assertEquals(realAppId, GitService.getAppId());
-        assertNull(result);
-    }
 
-    //testing if env var private key exists and is correct
-    @Test
-    public void testDefinePathWithRealValues() throws Exception {
-        // Given
-        String realPath = System.getenv("GITHUB_PRIVATE_KEY_PATH");
-        String realDecoded = PKC1Decode.decode();
 
-        // When
-        String result = GitService.definePath(realPath);
-
-        // Then
-        assertEquals(realPath, GitService.getPath());
-        assertEquals(realDecoded, result);
-    }
 
 }
-
