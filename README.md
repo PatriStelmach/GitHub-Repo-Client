@@ -12,7 +12,7 @@ Features
 Technologies Used
 -----------------
 - Java 21
-- Spring Boot 3.2+
+- Spring Boot 3.4.4
 - OpenFeign (for GitHub API communication)
 - JUnit 5 (unit and integration testing)
 - Maven
@@ -23,7 +23,7 @@ Prerequisites
 - Java 21 installed
 - Maven installed
 - GitHub App credentials:
-  - Private key (.pem format)
+  - Private key (.pem format, PKCS#1)
   - GitHub App ID
  
     
