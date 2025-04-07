@@ -52,13 +52,9 @@ public class GitClientIntegrationTest
         mockWebServer.shutdown();
     }
 
-
     @Test
     public void contextLoads() {
     }
-
-
-
     //tests if endpoint works for default "octocat" user
     @Test
     public void testGetReposFromGitHub()
