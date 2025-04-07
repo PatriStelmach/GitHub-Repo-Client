@@ -43,7 +43,7 @@ class DemoApplicationTests {
 		// given
 		String username = "blalellelelelelelelelleleleldoesntexist";
 		// when, then
-		assertThrows(UserNotFoundException.class, () -> gitService.getAllRepos("blalellelele..."));
+		assertThrows(UserNotFoundException.class, () -> gitService.getAllRepos("blalellelelelelelelelleleleldoesntexist"));
 	}
 
 }
